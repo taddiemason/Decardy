@@ -1,13 +1,13 @@
 # Decardy - Modern Website
 
-A modern, mobile-friendly website built with vanilla HTML, CSS, and JavaScript, deployable on Cloudflare Workers.
+A modern, mobile-friendly website built with vanilla HTML, CSS, and JavaScript, deployable on Cloudflare Pages (via GitHub) or Cloudflare Workers.
 
 ## Features
 
 - **Modern Design**: Clean, professional design with smooth animations and transitions
 - **Mobile-First**: Fully responsive design that works beautifully on all devices
 - **Fast Performance**: Optimized for speed with efficient CSS and JavaScript
-- **Cloudflare Ready**: Deploy to Cloudflare Workers for global edge distribution
+- **Cloudflare Ready**: Deploy via GitHub to Cloudflare Pages or Workers for global edge distribution
 - **Accessible**: Built with web accessibility best practices
 - **SEO Friendly**: Semantic HTML and proper meta tags
 
@@ -16,7 +16,7 @@ A modern, mobile-friendly website built with vanilla HTML, CSS, and JavaScript, 
 - **HTML5**: Semantic markup
 - **CSS3**: Modern CSS with variables, Grid, and Flexbox
 - **JavaScript**: Vanilla JS with modern ES6+ features
-- **Cloudflare Workers**: Edge computing for fast global delivery
+- **Cloudflare Pages/Workers**: Edge computing for fast global delivery with GitHub integration
 
 ## Project Structure
 
@@ -25,9 +25,12 @@ Decardy/
 ├── index.html          # Main HTML file
 ├── styles.css          # Stylesheet with responsive design
 ├── script.js           # Interactive JavaScript functionality
-├── worker.js           # Cloudflare Worker for deployment
+├── _headers            # Cloudflare Pages headers configuration
+├── _redirects          # Cloudflare Pages redirect rules
+├── worker.js           # Cloudflare Worker script (alternative deployment)
 ├── wrangler.toml       # Cloudflare Workers configuration
 ├── package.json        # Node.js dependencies
+├── .gitignore          # Git ignore file
 └── README.md           # This file
 ```
 
@@ -53,7 +56,64 @@ open index.html
 
 3. The website should now be running at `http://localhost:8000`
 
-## Deployment to Cloudflare Workers
+## Deployment Options
+
+### Option 1: Cloudflare Pages (Recommended - GitHub Integration)
+
+This is the easiest method with automatic deployments from GitHub.
+
+#### Prerequisites
+- [GitHub Account](https://github.com)
+- [Cloudflare Account](https://dash.cloudflare.com/sign-up)
+
+#### Step-by-Step Deployment
+
+1. **Push your code to GitHub** (if not already done):
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
+
+2. **Go to Cloudflare Pages**:
+   - Visit [Cloudflare Dashboard](https://dash.cloudflare.com/)
+   - Navigate to "Workers & Pages" in the left sidebar
+   - Click "Create application"
+   - Select "Pages" tab
+   - Click "Connect to Git"
+
+3. **Connect your GitHub repository**:
+   - Authorize Cloudflare to access your GitHub account
+   - Select the `Decardy` repository
+   - Click "Begin setup"
+
+4. **Configure build settings**:
+   - **Project name**: `decardy` (or your preferred name)
+   - **Production branch**: `main` (or your default branch)
+   - **Build command**: Leave empty (static site)
+   - **Build output directory**: `/` (root)
+   - Click "Save and Deploy"
+
+5. **Your site is live!**
+   - Cloudflare will build and deploy your site
+   - You'll get a URL like: `https://decardy.pages.dev`
+   - Every push to your main branch will auto-deploy
+
+6. **Add a custom domain** (Optional):
+   - In your Pages project, go to "Custom domains"
+   - Click "Set up a custom domain"
+   - Follow the instructions to add your domain
+
+#### Automatic Deployments
+
+Once set up, Cloudflare Pages will automatically:
+- Deploy on every push to your main branch
+- Create preview deployments for pull requests
+- Provide unique URLs for each deployment
+- Apply the security headers from `_headers` file
+- Handle redirects from `_redirects` file
+
+### Option 2: Cloudflare Workers
 
 ### Prerequisites
 
