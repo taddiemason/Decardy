@@ -1,0 +1,27 @@
+{
+  "name": "decardy-website",
+  "version": "1.0.0",
+  "description": "Modern, mobile-friendly website for Decardy",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev --remote",
+    "tail": "wrangler tail"
+  },
+  "keywords": [
+    "website",
+    "cloudflare",
+    "workers",
+    "static-site",
+    "responsive"
+  ],
+  "author": "Decardy",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "@cloudflare/kv-asset-handler": "^0.3.0"
+  }
+}
