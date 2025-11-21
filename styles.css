@@ -51,16 +51,13 @@ body {
     backdrop-filter: blur(10px);
     z-index: 1000;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    overflow: visible;
-    height: 80px;
 }
 
 .navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.25rem 20px;
-    height: 100%;
+    padding: 1rem 20px;
 }
 
 .nav-brand {
@@ -69,13 +66,10 @@ body {
 }
 
 .nav-brand .logo {
-    height: 180px;
+    height: 60px;
     width: auto;
     display: block;
     transition: var(--transition);
-    margin-left: -40px;
-    position: relative;
-    top: -50px;
 }
 
 .nav-brand .logo:hover {
@@ -547,16 +541,6 @@ body {
 
     .nav-menu.active {
         left: 0;
-    }
-
-    .navbar {
-        height: 60px;
-    }
-
-    .nav-brand .logo {
-        height: 80px;
-        margin-left: 0;
-        top: -10px;
     }
 
     .hero {
