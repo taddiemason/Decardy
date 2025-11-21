@@ -204,6 +204,17 @@ body {
     box-shadow: var(--shadow);
 }
 
+.floating-logo {
+    position: relative;
+    width: 80%;
+    height: auto;
+    max-height: 80%;
+    object-fit: contain;
+    z-index: 2;
+    margin: 10%;
+    filter: drop-shadow(0 0 20px rgba(108, 92, 231, 0.4));
+}
+
 .card-glow {
     position: absolute;
     top: 50%;
@@ -215,6 +226,7 @@ body {
     opacity: 0.3;
     filter: blur(40px);
     animation: pulse 4s ease-in-out infinite;
+    z-index: 1;
 }
 
 @keyframes float {
@@ -562,6 +574,11 @@ body {
     .floating-card {
         width: 200px;
         height: 280px;
+    }
+
+    .floating-logo {
+        width: 70%;
+        margin: 15%;
     }
 
     .about-grid {
