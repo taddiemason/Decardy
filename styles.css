@@ -65,6 +65,7 @@ body {
     width: auto;
     display: block;
     transition: var(--transition);
+    margin-left: -40px;
 }
 
 .nav-brand .logo:hover {
