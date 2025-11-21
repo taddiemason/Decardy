@@ -549,6 +549,16 @@ body {
         left: 0;
     }
 
+    .navbar {
+        height: 60px;
+    }
+
+    .nav-brand .logo {
+        height: 80px;
+        margin-left: 0;
+        top: -10px;
+    }
+
     .hero {
         background-attachment: scroll;
         background-position: center center;
