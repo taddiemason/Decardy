@@ -33,45 +33,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Animated counter for statistics
-const animateCounter = (element, target, duration = 2000) => {
-    let start = 0;
-    const increment = target / (duration / 16); // 60fps
-
-    const updateCounter = () => {
-        start += increment;
-        if (start < target) {
-            element.textContent = Math.floor(start) + (target === 99 ? '%' : '+');
-            requestAnimationFrame(updateCounter);
-        } else {
-            element.textContent = target + (target === 99 ? '%' : '+');
-        }
-    };
-
-    updateCounter();
-};
-
-// Intersection Observer for counter animation
-const observerOptions = {
-    threshold: 0.5,
-    rootMargin: '0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-            const target = parseInt(entry.target.dataset.target);
-            animateCounter(entry.target, target);
-            entry.target.classList.add('animated');
-        }
-    });
-}, observerOptions);
-
-// Observe all stat numbers
-document.querySelectorAll('.stat-number').forEach(stat => {
-    observer.observe(stat);
-});
-
 // Fade in sections on scroll
 const fadeObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -96,11 +57,8 @@ document.querySelectorAll('.service-card, .stat-card').forEach((card, index) => 
 // Form submission handler
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
+    contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-
-        const formData = new FormData(contactForm);
-        const data = Object.fromEntries(formData);
 
         // Show loading state
         const submitBtn = contactForm.querySelector('button[type="submit"]');
@@ -127,14 +85,18 @@ if (contactForm) {
     });
 }
 
-// Navbar background change on scroll
-let lastScroll = 0;
+// Consolidated scroll event handler
 const navbar = document.querySelector('.navbar');
+const sections = document.querySelectorAll('section[id]');
+const hero = document.querySelector('.hero');
+const heroContent = hero?.querySelector('.hero-content');
+const heroGraphic = hero?.querySelector('.hero-graphic');
 
 window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
+    const scrolled = window.pageYOffset;
 
-    if (currentScroll > 100) {
+    // Navbar background change on scroll
+    if (scrolled > 100) {
         navbar.style.background = 'rgba(26, 26, 46, 0.98)';
         navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.5)';
     } else {
@@ -142,21 +104,13 @@ window.addEventListener('scroll', () => {
         navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
     }
 
-    lastScroll = currentScroll;
-});
-
-// Add active state to nav links based on scroll position
-const sections = document.querySelectorAll('section[id]');
-
-window.addEventListener('scroll', () => {
+    // Add active state to nav links based on scroll position
     let current = '';
+    const navHeight = navbar.offsetHeight;
 
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        const navHeight = navbar.offsetHeight;
-
-        if (window.pageYOffset >= (sectionTop - navHeight - 100)) {
+        if (scrolled >= (sectionTop - navHeight - 100)) {
             current = section.getAttribute('id');
         }
     });
@@ -167,35 +121,16 @@ window.addEventListener('scroll', () => {
             link.classList.add('active');
         }
     });
-});
 
-// Add parallax effect to hero section
-const hero = document.querySelector('.hero');
-if (hero) {
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const heroContent = hero.querySelector('.hero-content');
-        const heroGraphic = hero.querySelector('.hero-graphic');
+    // Parallax effect on hero section
+    if (heroContent && scrolled < window.innerHeight) {
+        heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+        heroContent.style.opacity = 1 - (scrolled / 500);
+    }
 
-        if (heroContent && scrolled < window.innerHeight) {
-            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-            heroContent.style.opacity = 1 - (scrolled / 500);
-        }
-
-        if (heroGraphic && scrolled < window.innerHeight) {
-            heroGraphic.style.transform = `translateY(${scrolled * 0.3}px)`;
-        }
-    });
-}
-
-// Add cursor effect (optional - can be removed for simpler sites)
-document.addEventListener('mousemove', (e) => {
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-
-    // Create subtle glow effect following cursor
-    document.documentElement.style.setProperty('--mouse-x', mouseX + 'px');
-    document.documentElement.style.setProperty('--mouse-y', mouseY + 'px');
+    if (heroGraphic && scrolled < window.innerHeight) {
+        heroGraphic.style.transform = `translateY(${scrolled * 0.3}px)`;
+    }
 });
 
 // Prevent layout shift by preloading critical resources
