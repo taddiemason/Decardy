@@ -46,8 +46,8 @@ const fadeObserver = new IntersectionObserver((entries) => {
     rootMargin: '0px'
 });
 
-// Add fade effect to service cards and sections
-document.querySelectorAll('.service-card, .stat-card').forEach((card, index) => {
+// Add fade effect to service cards, gallery items, and sections
+document.querySelectorAll('.service-card, .stat-card, .gallery-item').forEach((card, index) => {
     card.style.opacity = '0';
     card.style.transform = 'translateY(30px)';
     card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
