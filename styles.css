@@ -367,6 +367,126 @@ body {
     color: var(--primary-color);
 }
 
+/* Gallery Section */
+.gallery {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.gallery-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    margin-top: -1.5rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.gallery-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.gallery-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    border-color: var(--primary-color);
+}
+
+.gallery-item:hover .gallery-image-placeholder {
+    box-shadow: 0 0 30px rgba(108, 92, 231, 0.6);
+}
+
+.gallery-image-placeholder {
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(135deg,
+        rgba(108, 92, 231, 0.1) 0%,
+        rgba(0, 206, 201, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.gallery-image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(108, 92, 231, 0.03) 10px,
+            rgba(108, 92, 231, 0.03) 20px
+        );
+    pointer-events: none;
+}
+
+.placeholder-text {
+    text-align: center;
+    z-index: 1;
+    color: var(--text-secondary);
+}
+
+.placeholder-text svg {
+    width: 60px;
+    height: 60px;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.placeholder-text p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gallery-caption {
+    padding: 1.5rem;
+}
+
+.gallery-caption h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.gallery-caption p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* For actual images (when you replace placeholders) */
+.gallery-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    transition: var(--transition);
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
 /* Services Section */
 .services-grid {
     display: grid;
@@ -588,6 +708,15 @@ body {
 
     .services-grid {
         grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .gallery-image-placeholder {
+        height: 250px;
     }
 
     .contact-content {
