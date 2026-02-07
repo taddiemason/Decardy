@@ -1,6 +1,7 @@
 name = "decardy-website"
 main = "worker.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
 
 # If you want to bind to your real domain:
 # routes = [
@@ -8,7 +9,5 @@ compatibility_date = "2024-01-01"
 # ]
 
 [assets]
-# IMPORTANT: point this at your *build output folder* (NOT the repo root)
-# Examples: "./dist", "./public", "./build", etc.
 directory = "./dist"
 binding = "ASSETS"
