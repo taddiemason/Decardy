@@ -8,6 +8,9 @@ compatibility_flags = ["nodejs_compat"]
 #   { pattern = "decardy.com/*", zone_name = "decardy.com" }
 # ]
 
+[build]
+command = "npm run build"
+
 [assets]
 directory = "./dist"
 binding = "ASSETS"
