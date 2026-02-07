@@ -4,9 +4,10 @@
   "description": "Modern, mobile-friendly website for Decardy",
   "main": "worker.js",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "preview": "wrangler dev --remote",
+    "build": "rm -rf dist && mkdir -p dist/images && cp index.html styles.css script.js _headers _redirects dist/ && cp DecardyFull.png 'decardy logo.png' dist/ && cp -r images/* dist/images/ 2>/dev/null || true",
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "npm run build && wrangler dev --remote",
     "tail": "wrangler tail"
   },
   "keywords": [
@@ -20,8 +21,5 @@
   "license": "MIT",
   "devDependencies": {
     "wrangler": "^3.0.0"
-  },
-  "dependencies": {
-    "@cloudflare/kv-asset-handler": "^0.3.0"
   }
 }
