@@ -2,25 +2,13 @@ name = "decardy-website"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-# Optionally, you can configure routes for a custom domain
+# If you want to bind to your real domain:
 # routes = [
 #   { pattern = "decardy.com/*", zone_name = "decardy.com" }
 # ]
 
-# Workers Sites configuration
-[site]
-bucket = "./"
-
-# Build configuration (optional)
-# [build]
-# command = "npm run build"
-# upload.format = "service-worker"
-
-# Environment variables (if needed)
-# [env.production]
-# vars = { ENVIRONMENT = "production" }
-
-# KV namespaces (if needed for future features)
-# [[kv_namespaces]]
-# binding = "DECARDY_KV"
-# id = "your-kv-namespace-id"
+[assets]
+# IMPORTANT: point this at your *build output folder* (NOT the repo root)
+# Examples: "./dist", "./public", "./build", etc.
+directory = "./dist"
+binding = "ASSETS"
