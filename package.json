@@ -4,8 +4,9 @@
   "description": "Modern, mobile-friendly website for Decardy",
   "main": "worker.js",
   "scripts": {
+    "build": "mkdir -p dist && cp index.html styles.css script.js dist/ && cp -r images dist/ && cp _headers _redirects dist/ 2>/dev/null; true",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "preview": "wrangler dev --remote",
     "tail": "wrangler tail"
   },
