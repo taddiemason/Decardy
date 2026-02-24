@@ -2,6 +2,9 @@ name = "decardy-website"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
+[build]
+command = "npm run build"
+
 # If you want to bind to your real domain:
 # routes = [
 #   { pattern = "decardy.com/*", zone_name = "decardy.com" }
