@@ -10,5 +10,5 @@ compatibility_date = "2024-01-01"
 [assets]
 # IMPORTANT: point this at your *build output folder* (NOT the repo root)
 # Examples: "./dist", "./public", "./build", etc.
-directory = "./dist"
+directory = "."
 binding = "ASSETS"
