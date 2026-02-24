@@ -1,3 +1,41 @@
+// Route legacy URL paths to the correct section on page load.
+// This handles any URL the worker didn't redirect (e.g. browser-cached 200s).
+(function () {
+  const pathMap = {
+    'contact':            '#contact',
+    'contact-us':         '#contact',
+    'quality':            '#quality',
+    'quality-assurance':  '#quality',
+    'services':           '#services',
+    'secondary-services': '#services',
+    'our-services':       '#services',
+    'about':              '#about',
+    'about-us':           '#about',
+    'gallery':            '#gallery',
+    'our-work':           '#gallery',
+    'portfolio':          '#gallery',
+    'why-zinc':           '#why-zinc',
+    'zinc':               '#why-zinc',
+    'zinc-die-casting':   '#why-zinc',
+    'spotlight':          '#examples',
+    'projects':           '#examples',
+  };
+
+  const segment = window.location.pathname.replace(/^\/|\/$/g, '').toLowerCase();
+  const anchor = pathMap[segment];
+  if (anchor) {
+    window.addEventListener('load', function () {
+      const target = document.querySelector(anchor);
+      if (target) {
+        const navHeight = document.querySelector('.navbar').offsetHeight;
+        setTimeout(function () {
+          window.scrollTo({ top: target.offsetTop - navHeight, behavior: 'smooth' });
+        }, 150);
+      }
+    });
+  }
+})();
+
 // Mobile Navigation Toggle
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.querySelector('.nav-menu');

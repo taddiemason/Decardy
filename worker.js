@@ -76,10 +76,37 @@ addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event));
 });
 
+// Map old site paths → section anchors (for Google sitelinks / legacy URLs)
+const PATH_REDIRECTS = {
+  '/contact':            '/#contact',
+  '/contact-us':         '/#contact',
+  '/quality':            '/#quality',
+  '/quality-assurance':  '/#quality',
+  '/services':           '/#services',
+  '/secondary-services': '/#services',
+  '/our-services':       '/#services',
+  '/about':              '/#about',
+  '/about-us':           '/#about',
+  '/gallery':            '/#gallery',
+  '/our-work':           '/#gallery',
+  '/portfolio':          '/#gallery',
+  '/why-zinc':           '/#why-zinc',
+  '/zinc':               '/#why-zinc',
+  '/zinc-die-casting':   '/#why-zinc',
+  '/spotlight':          '/#examples',
+  '/projects':           '/#examples',
+};
+
 async function handleRequest(event) {
   const request = event.request;
   const url = new URL(request.url);
   let pathname = url.pathname;
+
+  // 301-redirect old paths to the correct section anchor
+  const cleanPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
+  if (PATH_REDIRECTS[cleanPath]) {
+    return Response.redirect(url.origin + PATH_REDIRECTS[cleanPath], 301);
+  }
 
   // Serve index.html for root path
   if (pathname === '/') {
