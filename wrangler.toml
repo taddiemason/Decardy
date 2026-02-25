@@ -12,3 +12,4 @@ compatibility_date = "2024-09-23"
 # development dependencies (for example node_modules) as assets.
 directory = "./public"
 binding = "ASSETS"
+not_found_handling = "single-page-application"
