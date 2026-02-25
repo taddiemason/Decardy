@@ -146,9 +146,24 @@ async function handleRequest(event) {
     });
 
     if (!response.ok) {
-      // If file not found, serve index.html (for SPA routing)
+      // If not found at repo root, try public/ path (where Wrangler assets are sourced)
       if (response.status === 404) {
-        const indexUrl = 'https://raw.githubusercontent.com/taddiemason/Decardy/main/index.html';
+        const publicAssetUrl = `https://raw.githubusercontent.com/taddiemason/Decardy/main/public${pathname}`;
+        const publicAssetResponse = await fetch(publicAssetUrl, {
+          cf: {
+            cacheTtl: getCacheConfig(pathname).edgeTTL,
+            cacheEverything: true,
+          },
+        });
+
+        if (publicAssetResponse.ok) {
+          const publicResponse = new Response(publicAssetResponse.body, publicAssetResponse);
+          addHeaders(publicResponse, pathname);
+          return publicResponse;
+        }
+
+        // Final fallback for SPA routing
+        const indexUrl = 'https://raw.githubusercontent.com/taddiemason/Decardy/main/public/index.html';
         const indexResponse = await fetch(indexUrl);
         const modifiedResponse = new Response(indexResponse.body, {
           status: 200,
