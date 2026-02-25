@@ -1,8 +1,6 @@
-import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
-
 /**
- * Cloudflare Worker for Decardy Website
- * Serves static assets with optimized caching and performance
+ * Cloudflare Worker for Decardy Website (Module Worker syntax)
+ * Serves static assets from the Wrangler ASSETS binding with cache/security headers.
  */
 
 // Cache configuration for different asset types
@@ -30,23 +28,43 @@ const SECURITY_HEADERS = {
   'Permissions-Policy': 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
 };
 
-/**
- * Get cache configuration based on file type
- */
+// Map old site paths → section anchors (for Google sitelinks / legacy URLs)
+const PATH_REDIRECTS = {
+  '/contact': '/#contact',
+  '/contact-us': '/#contact',
+  '/quality': '/#quality',
+  '/quality-assurance': '/#quality',
+  '/services': '/#services',
+  '/secondary-services': '/#services',
+  '/our-services': '/#services',
+  '/about': '/#about',
+  '/about-us': '/#about',
+  '/gallery': '/#gallery',
+  '/our-work': '/#gallery',
+  '/portfolio': '/#gallery',
+  '/why-zinc': '/#why-zinc',
+  '/zinc': '/#why-zinc',
+  '/zinc-die-casting': '/#why-zinc',
+  '/spotlight': '/#examples',
+  '/projects': '/#examples',
+};
+
 function getCacheConfig(pathname) {
   if (pathname.endsWith('.html') || pathname === '/') {
     return CACHE_CONFIG.html;
-  } else if (pathname.match(/\.(css|js)$/)) {
+  }
+
+  if (pathname.match(/\.(css|js)$/)) {
     return CACHE_CONFIG.assets;
-  } else if (pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|ico)$/)) {
+  }
+
+  if (pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|ico)$/)) {
     return CACHE_CONFIG.images;
   }
+
   return CACHE_CONFIG.assets;
 }
 
-/**
- * Get content type based on file extension
- */
 function getContentType(pathname) {
   const ext = pathname.split('.').pop().toLowerCase();
   const contentTypes = {
@@ -66,152 +84,24 @@ function getContentType(pathname) {
     ttf: 'font/ttf',
     eot: 'application/vnd.ms-fontobject',
   };
+
   return contentTypes[ext] || 'application/octet-stream';
 }
 
-/**
- * Main fetch handler
- */
-addEventListener('fetch', (event) => {
-  event.respondWith(handleRequest(event));
-});
-
-// Map old site paths → section anchors (for Google sitelinks / legacy URLs)
-const PATH_REDIRECTS = {
-  '/contact':            '/#contact',
-  '/contact-us':         '/#contact',
-  '/quality':            '/#quality',
-  '/quality-assurance':  '/#quality',
-  '/services':           '/#services',
-  '/secondary-services': '/#services',
-  '/our-services':       '/#services',
-  '/about':              '/#about',
-  '/about-us':           '/#about',
-  '/gallery':            '/#gallery',
-  '/our-work':           '/#gallery',
-  '/portfolio':          '/#gallery',
-  '/why-zinc':           '/#why-zinc',
-  '/zinc':               '/#why-zinc',
-  '/zinc-die-casting':   '/#why-zinc',
-  '/spotlight':          '/#examples',
-  '/projects':           '/#examples',
-};
-
-async function handleRequest(event) {
-  const request = event.request;
-  const url = new URL(request.url);
-  let pathname = url.pathname;
-
-  // 301-redirect old paths to the correct section anchor
-  const cleanPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
-  if (PATH_REDIRECTS[cleanPath]) {
-    return Response.redirect(url.origin + PATH_REDIRECTS[cleanPath], 301);
-  }
-
-  // Serve index.html for root path
-  if (pathname === '/') {
-    pathname = '/index.html';
-  }
-
-  try {
-    // Try to serve from Workers KV (if using Wrangler's site functionality)
-    if (typeof getAssetFromKV !== 'undefined') {
-      const options = {
-        cacheControl: {
-          browserTTL: 0, // We'll set our own cache headers
-          edgeTTL: 0,
-        },
-      };
-
-      try {
-        const page = await getAssetFromKV(event, options);
-        const response = new Response(page.body, page);
-
-        // Add custom headers
-        addHeaders(response, pathname);
-
-        return response;
-      } catch (e) {
-        // If asset not found in KV, continue to file serving
-      }
-    }
-
-    // Fallback: Serve files directly from GitHub or your origin
-    const assetUrl = `https://raw.githubusercontent.com/taddiemason/Decardy/main${pathname}`;
-    const response = await fetch(assetUrl, {
-      cf: {
-        cacheTtl: getCacheConfig(pathname).edgeTTL,
-        cacheEverything: true,
-      },
-    });
-
-    if (!response.ok) {
-      // If not found at repo root, try public/ path (where Wrangler assets are sourced)
-      if (response.status === 404) {
-        const publicAssetUrl = `https://raw.githubusercontent.com/taddiemason/Decardy/main/public${pathname}`;
-        const publicAssetResponse = await fetch(publicAssetUrl, {
-          cf: {
-            cacheTtl: getCacheConfig(pathname).edgeTTL,
-            cacheEverything: true,
-          },
-        });
-
-        if (publicAssetResponse.ok) {
-          const publicResponse = new Response(publicAssetResponse.body, publicAssetResponse);
-          addHeaders(publicResponse, pathname);
-          return publicResponse;
-        }
-
-        // Final fallback for SPA routing
-        const indexUrl = 'https://raw.githubusercontent.com/taddiemason/Decardy/main/public/index.html';
-        const indexResponse = await fetch(indexUrl);
-        const modifiedResponse = new Response(indexResponse.body, {
-          status: 200,
-          headers: indexResponse.headers,
-        });
-        addHeaders(modifiedResponse, '/index.html');
-        return modifiedResponse;
-      }
-      return response;
-    }
-
-    // Create new response with custom headers
-    const modifiedResponse = new Response(response.body, response);
-    addHeaders(modifiedResponse, pathname);
-
-    return modifiedResponse;
-  } catch (error) {
-    return new Response(`Error: ${error.message}`, {
-      status: 500,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
-  }
-}
-
-/**
- * Add cache and security headers to response
- */
 function addHeaders(response, pathname) {
   const cacheConfig = getCacheConfig(pathname);
   const contentType = getContentType(pathname);
 
-  // Set content type
   response.headers.set('Content-Type', contentType);
-
-  // Set cache headers
   response.headers.set(
     'Cache-Control',
     `public, max-age=${cacheConfig.browserTTL}, s-maxage=${cacheConfig.edgeTTL}`
   );
 
-  // Add security headers
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
 
-  // Add CSP for HTML files
   if (pathname.endsWith('.html') || pathname === '/') {
     response.headers.set(
       'Content-Security-Policy',
@@ -219,6 +109,48 @@ function addHeaders(response, pathname) {
     );
   }
 
-  // Add CORS headers (optional, adjust as needed)
   response.headers.set('Access-Control-Allow-Origin', '*');
 }
+
+async function handleRequest(request, env) {
+  const url = new URL(request.url);
+  const cleanPath = url.pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+  // 301-redirect old paths to the correct section anchor
+  if (PATH_REDIRECTS[cleanPath]) {
+    return Response.redirect(url.origin + PATH_REDIRECTS[cleanPath], 301);
+  }
+
+  const assetResponse = await env.ASSETS.fetch(request);
+
+  // Explicit SPA fallback in case runtime path handling differs.
+  if (assetResponse.status === 404) {
+    const indexUrl = new URL('/index.html', url);
+    const indexResponse = await env.ASSETS.fetch(new Request(indexUrl, request));
+    if (indexResponse.ok) {
+      const response = new Response(indexResponse.body, indexResponse);
+      addHeaders(response, '/index.html');
+      return response;
+    }
+    return assetResponse;
+  }
+
+  const response = new Response(assetResponse.body, assetResponse);
+  addHeaders(response, url.pathname === '/' ? '/index.html' : url.pathname);
+  return response;
+}
+
+export default {
+  async fetch(request, env) {
+    try {
+      return await handleRequest(request, env);
+    } catch (error) {
+      return new Response(`Error: ${error.message}`, {
+        status: 500,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    }
+  },
+};
