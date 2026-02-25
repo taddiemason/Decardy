@@ -1,4 +1,4 @@
-name = "decardy-website"
+name = "decardy"
 main = "worker.js"
 compatibility_date = "2024-09-23"
 
@@ -8,6 +8,8 @@ compatibility_date = "2024-09-23"
 # ]
 
 [assets]
-# Serve static files directly from the repo root — no build step required
-directory = "."
+# Serve static files from a dedicated public directory to avoid uploading
+# development dependencies (for example node_modules) as assets.
+directory = "./public"
 binding = "ASSETS"
+html_handling = "none"
