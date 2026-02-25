@@ -1,0 +1,3 @@
+# Cloudflare redirects for static assets mode
+# Keep root explicit; avoid wildcard fallback loops with Workers Assets.
+/ /index.html 200
