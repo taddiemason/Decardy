@@ -8,8 +8,8 @@ compatibility_date = "2024-09-23"
 # ]
 
 [assets]
-# Serve static files from a dedicated public directory to avoid uploading
-# development dependencies (for example node_modules) as assets.
-directory = "./public"
+# Serve static files from repo root so existing image/logo paths resolve
+# without duplicating binary assets under public/.
+directory = "./"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
