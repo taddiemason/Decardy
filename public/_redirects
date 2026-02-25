@@ -1,2 +1,5 @@
 # Intentionally left without redirect/rewrite rules for Workers Assets deploys.
 # Routing/fallback behavior is handled by worker.js.
+# Cloudflare redirects for static assets mode
+# Keep root explicit; avoid wildcard fallback loops with Workers Assets.
+/ /index.html 200
