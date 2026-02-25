@@ -1,0 +1,11 @@
+# Prevent accidental upload of dependency/build directories if assets dir is set to repo root
+node_modules/
+.git/
+.wrangler/
+.dist/
+dist/
+coverage/
+
+# Local/editor/system files
+.DS_Store
+*.log
