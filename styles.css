@@ -428,11 +428,51 @@ body {
     color: var(--text-primary);
 }
 
-.pdf-popup iframe {
+.pdf-popup-open-link {
+    font-size: 0.78rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+}
+
+.pdf-popup-open-link:hover {
+    text-decoration: underline;
+}
+
+.pdf-popup object {
     flex: 1;
     width: 100%;
     border: none;
     border-radius: 0 0 12px 12px;
+    display: block;
+}
+
+.pdf-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 1rem;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.pdf-fallback a {
+    color: var(--secondary-color);
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1px solid var(--secondary-color);
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.pdf-fallback a:hover {
+    background: var(--secondary-color);
+    color: var(--darker-bg);
 }
 
 .contact-link {

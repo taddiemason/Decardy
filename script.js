@@ -191,6 +191,8 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
     const popup = document.getElementById('pdf-popup');
     const frame = document.getElementById('pdf-popup-frame');
     const title = document.getElementById('pdf-popup-title');
+    const openLink = document.getElementById('pdf-popup-open');
+    const fallbackLink = document.getElementById('pdf-fallback-link');
     const closeBtn = popup.querySelector('.pdf-popup-close');
 
     const MARGIN = 16; // px gap from card
@@ -235,8 +237,9 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
 
         if (currentCard !== card) {
             currentCard = card;
-            const absoluteUrl = new URL(pdfSrc, window.location.origin).href;
-            frame.src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(absoluteUrl) + '&embedded=true';
+            frame.data = pdfSrc;
+            openLink.href = pdfSrc;
+            fallbackLink.href = pdfSrc;
             title.textContent = labelMap[key];
         }
 

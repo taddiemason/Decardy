@@ -109,7 +109,7 @@ function addHeaders(response, pathname) {
   if (pathname.endsWith('.html') || pathname === '/') {
     response.headers.set(
       'Content-Security-Policy',
-      "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'self' https://docs.google.com;"
+      "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self';"
     );
   }
 
