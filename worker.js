@@ -94,6 +94,9 @@ function addHeaders(response, pathname) {
   const contentType = getContentType(pathname);
 
   response.headers.set('Content-Type', contentType);
+  if (pathname.toLowerCase().endsWith('.pdf')) {
+    response.headers.set('Content-Disposition', 'inline');
+  }
   response.headers.set(
     'Cache-Control',
     `public, max-age=${cacheConfig.browserTTL}, s-maxage=${cacheConfig.edgeTTL}`
