@@ -22,7 +22,7 @@ const CACHE_CONFIG = {
 // Security headers
 const SECURITY_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
+  'X-Frame-Options': 'SAMEORIGIN',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
@@ -79,6 +79,7 @@ function getContentType(pathname) {
     svg: 'image/svg+xml',
     webp: 'image/webp',
     ico: 'image/x-icon',
+    pdf: 'application/pdf',
     woff: 'font/woff',
     woff2: 'font/woff2',
     ttf: 'font/ttf',
