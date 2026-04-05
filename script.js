@@ -196,6 +196,8 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
     const MARGIN = 16; // px gap from card
     let hideTimer = null;
     let currentCard = null;
+    let mouseHasMoved = false;
+    document.addEventListener('mousemove', () => { mouseHasMoved = true; }, { once: true });
 
     const labelMap = {
         '9001': 'ISO 9001:2015 Certificate',
@@ -226,6 +228,7 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
     }
 
     function showPopup(card) {
+        if (!mouseHasMoved) return;
         clearTimeout(hideTimer);
         const pdfSrc = card.dataset.pdf;
         const key = pdfSrc.includes('13485') ? '13485' : '9001';
