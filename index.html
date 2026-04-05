@@ -251,13 +251,15 @@
                         <p>Our certifications ensure that every part we produce meets rigorous quality standards, from initial design through final delivery.</p>
                     </div>
                     <div class="about-stats">
-                        <div class="stat-card">
+                        <div class="stat-card iso-card" data-pdf="/images/ISO 9001-090924.pdf">
                             <div class="stat-number">ISO</div>
                             <div class="stat-label">9001:2015 Certified</div>
+                            <div class="pdf-hint">Hover to view certificate</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card iso-card" data-pdf="/images/ISO 13485-2016-091124.pdf">
                             <div class="stat-number">ISO</div>
                             <div class="stat-label">13485:2016 Certified</div>
+                            <div class="pdf-hint">Hover to view certificate</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number">NADCA</div>
@@ -311,6 +313,15 @@
             <p>&copy; 2025 DeCardy Diecasting. All rights reserved. | 3935 W. Shakespeare Ave., Chicago, IL 60647 | Ph: 773.235.6916</p>
         </div>
     </footer>
+
+    <!-- PDF Preview Popup -->
+    <div id="pdf-popup" class="pdf-popup" aria-hidden="true">
+        <div class="pdf-popup-header">
+            <span id="pdf-popup-title"></span>
+            <button class="pdf-popup-close" aria-label="Close">&times;</button>
+        </div>
+        <iframe id="pdf-popup-frame" src="" title="ISO Certificate"></iframe>
+    </div>
 
     <script src="script.js" defer></script>
 </body>

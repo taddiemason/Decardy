@@ -185,3 +185,88 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
 console.log('%c🚀 Decardy Website', 'color: #6c5ce7; font-size: 20px; font-weight: bold;');
 console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 14px;');
+
+// ISO PDF hover preview
+(function () {
+    const popup = document.getElementById('pdf-popup');
+    const frame = document.getElementById('pdf-popup-frame');
+    const title = document.getElementById('pdf-popup-title');
+    const closeBtn = popup.querySelector('.pdf-popup-close');
+
+    const MARGIN = 16; // px gap from card
+    let hideTimer = null;
+    let currentCard = null;
+
+    const labelMap = {
+        '9001': 'ISO 9001:2015 Certificate',
+        '13485': 'ISO 13485:2016 Certificate',
+    };
+
+    function positionPopup(card) {
+        const rect = card.getBoundingClientRect();
+        const popupW = popup.offsetWidth;
+        const popupH = popup.offsetHeight;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        // Prefer right of card, fall back to left
+        let left = rect.right + MARGIN;
+        if (left + popupW > vw - MARGIN) {
+            left = rect.left - popupW - MARGIN;
+        }
+        // Clamp left
+        left = Math.max(MARGIN, Math.min(left, vw - popupW - MARGIN));
+
+        // Vertically center on card, then clamp
+        let top = rect.top + rect.height / 2 - popupH / 2;
+        top = Math.max(MARGIN, Math.min(top, vh - popupH - MARGIN));
+
+        popup.style.left = left + 'px';
+        popup.style.top = top + 'px';
+    }
+
+    function showPopup(card) {
+        clearTimeout(hideTimer);
+        const pdfSrc = card.dataset.pdf;
+        const key = pdfSrc.includes('13485') ? '13485' : '9001';
+
+        if (currentCard !== card) {
+            currentCard = card;
+            frame.src = pdfSrc;
+            title.textContent = labelMap[key];
+        }
+
+        popup.classList.add('visible');
+        popup.setAttribute('aria-hidden', 'false');
+        positionPopup(card);
+    }
+
+    function hidePopup() {
+        hideTimer = setTimeout(() => {
+            popup.classList.remove('visible');
+            popup.setAttribute('aria-hidden', 'true');
+            currentCard = null;
+        }, 200);
+    }
+
+    document.querySelectorAll('.iso-card').forEach(card => {
+        card.addEventListener('mouseenter', () => showPopup(card));
+        card.addEventListener('mouseleave', hidePopup);
+    });
+
+    popup.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+    popup.addEventListener('mouseleave', hidePopup);
+
+    closeBtn.addEventListener('click', () => {
+        clearTimeout(hideTimer);
+        popup.classList.remove('visible');
+        popup.setAttribute('aria-hidden', 'true');
+        currentCard = null;
+    });
+
+    window.addEventListener('resize', () => {
+        if (currentCard && popup.classList.contains('visible')) {
+            positionPopup(currentCard);
+        }
+    });
+})();
