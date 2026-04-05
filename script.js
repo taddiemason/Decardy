@@ -232,7 +232,8 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
 
         if (currentCard !== card) {
             currentCard = card;
-            frame.src = pdfSrc;
+            const absoluteUrl = new URL(pdfSrc, window.location.origin).href;
+            frame.src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(absoluteUrl) + '&embedded=true';
             title.textContent = labelMap[key];
         }
 
