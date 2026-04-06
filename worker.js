@@ -126,6 +126,14 @@ async function handleRequest(request, env) {
   }
 
   const assetResponse = await env.ASSETS.fetch(request);
+  const pathname = url.pathname === '/' ? '/index.html' : url.pathname;
+  const expectsFile = /\.[a-z0-9]+$/i.test(url.pathname);
+
+  // For explicit asset requests (e.g. PDFs/images), never serve SPA HTML fallback.
+  // This avoids returning index.html with a misleading asset content type.
+  if (expectsFile && assetResponse.headers.get('Content-Type')?.includes('text/html')) {
+    return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  }
 
   // Explicit SPA fallback in case runtime path handling differs.
   if (assetResponse.status === 404) {
@@ -140,7 +148,7 @@ async function handleRequest(request, env) {
   }
 
   const response = new Response(assetResponse.body, assetResponse);
-  addHeaders(response, url.pathname === '/' ? '/index.html' : url.pathname);
+  addHeaders(response, pathname);
   return response;
 }
 
