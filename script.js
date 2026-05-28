@@ -1,5 +1,4 @@
 // Route legacy URL paths to the correct section on page load.
-// This handles any URL the worker didn't redirect (e.g. browser-cached 200s).
 (function () {
   const pathMap = {
     'contact':            '#contact',
@@ -42,13 +41,15 @@ const navMenu = document.querySelector('.nav-menu');
 const navLinks = document.querySelectorAll('.nav-link');
 
 navToggle.addEventListener('click', () => {
+    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!expanded));
     navToggle.classList.toggle('active');
     navMenu.classList.toggle('active');
 });
 
-// Close mobile menu when clicking on a link
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
+        navToggle.setAttribute('aria-expanded', 'false');
         navToggle.classList.remove('active');
         navMenu.classList.remove('active');
     });
@@ -57,39 +58,70 @@ navLinks.forEach(link => {
 // Smooth scrolling with offset for fixed navbar
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#') return;
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const target = document.querySelector(href);
         if (target) {
             const navHeight = document.querySelector('.navbar').offsetHeight;
-            const targetPosition = target.offsetTop - navHeight;
-
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: target.offsetTop - navHeight, behavior: 'smooth' });
         }
     });
 });
 
-// Fade in sections on scroll
+// Scroll-driven: navbar shadow + active nav link
+const navbar = document.getElementById('navbar');
+const sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+
+    // Add shadow class on scroll
+    navbar.classList.toggle('scrolled', scrolled > 40);
+
+    // Active nav link tracking
+    let current = '';
+    const navHeight = navbar.offsetHeight;
+    sections.forEach(section => {
+        if (scrolled >= section.offsetTop - navHeight - 80) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+
+    // Parallax on hero
+    if (scrolled < window.innerHeight) {
+        const heroContent = document.querySelector('.hero-content');
+        const heroGraphic = document.querySelector('.hero-graphic');
+        if (heroContent) {
+            heroContent.style.transform = `translateY(${scrolled * 0.4}px)`;
+            heroContent.style.opacity = String(1 - scrolled / 600);
+        }
+        if (heroGraphic) {
+            heroGraphic.style.transform = `translateY(${scrolled * 0.25}px)`;
+        }
+    }
+}, { passive: true });
+
+// Fade-up scroll animations
 const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+    entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
+            entry.target.style.transition = `opacity 0.55s ease ${i * 0.04}s, transform 0.55s ease ${i * 0.04}s`;
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
+            fadeObserver.unobserve(entry.target);
         }
     });
-}, {
-    threshold: 0.1,
-    rootMargin: '100px'
-});
+}, { threshold: 0.1, rootMargin: '60px' });
 
-// Add fade effect to service cards, gallery items, and sections
-document.querySelectorAll('.service-card, .stat-card, .gallery-item').forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(30px)';
-    card.style.transition = `opacity 0.6s ease ${index * 0.05}s, transform 0.6s ease ${index * 0.05}s`;
-    fadeObserver.observe(card);
+document.querySelectorAll('.fade-up').forEach(el => {
+    fadeObserver.observe(el);
 });
 
 // Form submission handler
@@ -97,23 +129,15 @@ const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-
-        // Show loading state
         const submitBtn = contactForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Sending...';
+        submitBtn.textContent = 'Sending…';
         submitBtn.disabled = true;
 
-        // Simulate form submission (replace with actual API call)
         setTimeout(() => {
-            // Success message
             submitBtn.textContent = 'Message Sent!';
-            submitBtn.style.background = 'linear-gradient(135deg, #00b894, #00cec9)';
-
-            // Reset form
+            submitBtn.style.background = '#059669';
             contactForm.reset();
-
-            // Reset button after delay
             setTimeout(() => {
                 submitBtn.textContent = originalText;
                 submitBtn.style.background = '';
@@ -123,68 +147,12 @@ if (contactForm) {
     });
 }
 
-// Consolidated scroll event handler
-const navbar = document.querySelector('.navbar');
-const sections = document.querySelectorAll('section[id]');
-const hero = document.querySelector('.hero');
-const heroContent = hero?.querySelector('.hero-content');
-const heroGraphic = hero?.querySelector('.hero-graphic');
-
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-
-    // Navbar background change on scroll
-    if (scrolled > 100) {
-        navbar.style.background = 'rgba(26, 26, 46, 0.98)';
-        navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.5)';
-    } else {
-        navbar.style.background = 'rgba(26, 26, 46, 0.95)';
-        navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
-    }
-
-    // Add active state to nav links based on scroll position
-    let current = '';
-    const navHeight = navbar.offsetHeight;
-
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (scrolled >= (sectionTop - navHeight - 100)) {
-            current = section.getAttribute('id');
-        }
-    });
-
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-
-    // Parallax effect on hero section
-    if (heroContent && scrolled < window.innerHeight) {
-        heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-        heroContent.style.opacity = 1 - (scrolled / 500);
-    }
-
-    if (heroGraphic && scrolled < window.innerHeight) {
-        heroGraphic.style.transform = `translateY(${scrolled * 0.3}px)`;
-    }
-});
-
-// Prevent layout shift by preloading critical resources
-window.addEventListener('load', () => {
-    document.body.classList.add('loaded');
-});
-
-// Handle reduced motion preference
+// Reduced motion
 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll('.floating-card').forEach(card => {
         card.style.animation = 'none';
     });
 }
-
-console.log('%c🚀 Decardy Website', 'color: #6c5ce7; font-size: 20px; font-weight: bold;');
-console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 14px;');
 
 // ISO PDF hover preview
 (function () {
@@ -193,7 +161,7 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
     const title = document.getElementById('pdf-popup-title');
     const closeBtn = popup.querySelector('.pdf-popup-close');
 
-    const MARGIN = 16; // px gap from card
+    const MARGIN = 16;
     let hideTimer = null;
     let currentCard = null;
 
@@ -209,15 +177,10 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
-        // Prefer right of card, fall back to left
         let left = rect.right + MARGIN;
-        if (left + popupW > vw - MARGIN) {
-            left = rect.left - popupW - MARGIN;
-        }
-        // Clamp left
+        if (left + popupW > vw - MARGIN) left = rect.left - popupW - MARGIN;
         left = Math.max(MARGIN, Math.min(left, vw - popupW - MARGIN));
 
-        // Vertically center on card, then clamp
         let top = rect.top + rect.height / 2 - popupH / 2;
         top = Math.max(MARGIN, Math.min(top, vh - popupH - MARGIN));
 
@@ -229,13 +192,11 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
         clearTimeout(hideTimer);
         const pdfSrc = card.dataset.pdf;
         const key = pdfSrc.includes('13485') ? '13485' : '9001';
-
         if (currentCard !== card) {
             currentCard = card;
             frame.src = pdfSrc;
             title.textContent = labelMap[key];
         }
-
         popup.classList.add('visible');
         popup.setAttribute('aria-hidden', 'false');
         positionPopup(card);
@@ -265,8 +226,6 @@ console.log('%cBuilt with modern web technologies', 'color: #00cec9; font-size: 
     });
 
     window.addEventListener('resize', () => {
-        if (currentCard && popup.classList.contains('visible')) {
-            positionPopup(currentCard);
-        }
+        if (currentCard && popup.classList.contains('visible')) positionPopup(currentCard);
     });
 })();
